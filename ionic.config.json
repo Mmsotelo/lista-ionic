@@ -1,0 +1,7 @@
+{
+  "name": "lista-ionic",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
