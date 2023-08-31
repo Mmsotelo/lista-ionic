@@ -7,20 +7,25 @@ import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications
 export class LocalNotificationsService {
   constructor(private localNotifications: LocalNotifications) {}
 
-  createNotification() {
+  createNotification(id: string, date: string) {
     this.localNotifications.requestPermission().then(granted => {
-      this.localNotifications.schedule({
-        title: 'My first notification',
-        text: 'Thats pretty easy...',
-        foreground: true,
-        vibrate: true
-      });
+      if(granted) {
+        this.localNotifications.schedule({
+          id: Number(id),
+          title: 'My first notification',
+          text: 'Thats pretty easy...',
+          trigger: { at: new Date(date) },
+          foreground: true,
+          vibrate: true
+        });
+      }
     });
-    this.localNotifications.schedule({
-      id: 2,
-      title: 'Minha Notificação',
-      text: 'Esta é uma notificação local!',
-      trigger: { at: new Date(new Date().getTime() + 5000) }
+  }
+  
+  updateNotification(id: string, date: string) {
+    this.localNotifications.update({
+      id: Number(id),
+      trigger: { at: new Date(date) }
     })
   }
 }

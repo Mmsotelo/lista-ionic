@@ -32,9 +32,8 @@ export class HomePage {
   }
   
   async addItem() {
-    this.notificationService.createNotification();
-
     const generatedId = Date.now().toString();
+    this.notificationService.createNotification(generatedId, this.taskForm.value.dueDate as string);
     this.taskService.createTask(generatedId, {
       id: generatedId,
       name: this.taskForm.value.name,
