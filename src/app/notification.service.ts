@@ -12,8 +12,8 @@ export class LocalNotificationsService {
       if(granted) {
         this.localNotifications.schedule({
           id: Number(id),
-          title: 'My first notification',
-          text: 'Thats pretty easy...',
+          title: 'Lembrete de tarefa',
+          text: 'Chegou o prazo final para realizar sua tarefa!',
           trigger: { at: new Date(date) },
           foreground: true,
           vibrate: true

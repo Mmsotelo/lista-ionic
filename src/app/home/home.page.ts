@@ -63,6 +63,7 @@ export class HomePage {
 
   async saveItem() {
     const id = this.taskForm.value.id as string;
+    this.notificationService.updateNotification(id, this.taskForm.value.dueDate as string);
     await this.taskService.editTask(id, {
       id: id,
       name: this.taskForm.value.name,
