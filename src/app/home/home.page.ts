@@ -3,8 +3,8 @@ import { IonicModule } from '@ionic/angular';
 import { Task } from '../task';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { TaskService } from '../task.service';
-import { LocalNotificationsService } from '../notification.service';
+import { TaskService } from '../services/TaskStorage.service';
+import { ToastMessage } from '../services/ToastMessage.service';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +25,7 @@ export class HomePage {
   showPending = true;
 
   taskService: TaskService = inject(TaskService);
-  notificationService: LocalNotificationsService = inject(LocalNotificationsService);
+  toastService: ToastMessage = inject(ToastMessage);
 
   async ngOnInit() {
     await this.refreshList("pending");
@@ -33,7 +33,7 @@ export class HomePage {
   
   async addItem() {
     const generatedId = Date.now().toString();
-    this.notificationService.createNotification(generatedId, this.taskForm.value.dueDate as string);
+    this.toastService.presentToastWithOptions();
     this.taskService.createTask(generatedId, {
       id: generatedId,
       name: this.taskForm.value.name,
@@ -63,7 +63,6 @@ export class HomePage {
 
   async saveItem() {
     const id = this.taskForm.value.id as string;
-    this.notificationService.updateNotification(id, this.taskForm.value.dueDate as string);
     await this.taskService.editTask(id, {
       id: id,
       name: this.taskForm.value.name,
