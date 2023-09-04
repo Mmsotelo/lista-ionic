@@ -23,17 +23,18 @@ export class HomePage {
   taskList: Task[] = [];
   editing = false;
   showPending = true;
+  presentAlert = false;
 
   taskService: TaskService = inject(TaskService);
   toastService: ToastMessage = inject(ToastMessage);
 
   async ngOnInit() {
     await this.refreshList("pending");
+    this.checkDueDate();
   }
   
   async addItem() {
     const generatedId = Date.now().toString();
-    this.toastService.presentToastWithOptions();
     this.taskService.createTask(generatedId, {
       id: generatedId,
       name: this.taskForm.value.name,
@@ -82,6 +83,7 @@ export class HomePage {
       this.taskList = taskList.filter(element => element.finished);
     } else if (filterStatus === "pending") {
       this.taskList = taskList.filter(element => !element.finished);
+      this.checkDueDate();
     }
   }
 
@@ -119,4 +121,38 @@ export class HomePage {
     this.editing = false;
   }
 
+  async clearList(){
+    this.presentAlert = true;
+  }
+
+  async checkDueDate() {
+    const now = new Date();
+    const currentDay = now.getDate();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const taskPendingList =  (await this.taskService.getAll()).filter(item => !item.finished);
+    taskPendingList.forEach(task => {
+      const taskDay = new Date(task.dueDate).getDate();
+      const taskMonth = new Date(task.dueDate).getMonth();
+      const taskYear = new Date(task.dueDate).getFullYear();
+      if(currentDay === taskDay && currentMonth === taskMonth && currentYear === taskYear) {
+        this.toastService.presentToast(task.name);
+      }
+    })
+  }
+
+  public alertButtons = [
+    {
+      text: 'Cancelar',
+      role: 'cancel',
+    },
+    {
+      text: 'Limpar tudo',
+      role: 'confirm',
+      handler: async () => {
+        await this.taskService.clearAllTasks();
+        this.refreshList('pending');
+      },
+    },
+  ];
 }
