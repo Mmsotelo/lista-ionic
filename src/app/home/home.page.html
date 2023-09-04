@@ -7,6 +7,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-alert
+    [isOpen]="presentAlert"
+    header="Deseja limpar a lista?"
+    message="Essa ação removerá todas as tarefas cadastradas!"
+    [buttons]="alertButtons"
+    (didDismiss)="presentAlert = false"
+  ></ion-alert>
   <ion-card>
     <ion-card-content>
       <form [formGroup]="taskForm">
@@ -25,7 +32,8 @@
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
             <ion-datetime 
-              id="datetime" 
+              id="datetime"
+              presentation="date"
               formControlName="dueDate"
               [showDefaultButtons]="true"
             ></ion-datetime>
@@ -48,10 +56,10 @@
     </ion-card-content>
   </ion-card>
   <ion-row style="padding: 0 0.5rem; display: flex; align-items: center; justify-content: space-between">
-    <h3>Minha Lista</h3>
-    <ion-button *ngIf="showPending; else showFinished" (click)="toggleTaskList('finished')">Mostrar Finalizadas</ion-button>
+    <ion-button color="danger" size="small" (click)="clearList()">Limpar tudo</ion-button>
+    <ion-button *ngIf="showPending; else showFinished" size="small" (click)="toggleTaskList('finished')">Mostrar Finalizadas</ion-button>
     <ng-template #showFinished>
-      <ion-button (click)="toggleTaskList('pending')">Mostrar Abertas</ion-button>
+      <ion-button size="small" (click)="toggleTaskList('pending')">Mostrar Abertas</ion-button>
     </ng-template>
   </ion-row>
   <ion-list style="margin: 0.5rem; padding: 0; border-radius: 6px; overflow-y: scroll;">

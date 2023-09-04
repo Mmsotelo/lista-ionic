@@ -33,4 +33,8 @@ export class TaskService {
   public async deleteTaskByID(id: string) {
     return await this.storage.remove(id);
   }
+
+  public async clearAllTasks() {
+    return await this.storage.clear();
+  }
 }

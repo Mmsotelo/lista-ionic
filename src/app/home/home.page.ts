@@ -3,8 +3,8 @@ import { IonicModule } from '@ionic/angular';
 import { Task } from '../task';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { TaskService } from '../task.service';
-import { LocalNotificationsService } from '../notification.service';
+import { TaskService } from '../services/TaskStorage.service';
+import { ToastMessage } from '../services/ToastMessage.service';
 
 @Component({
   selector: 'app-home',
@@ -23,17 +23,18 @@ export class HomePage {
   taskList: Task[] = [];
   editing = false;
   showPending = true;
+  presentAlert = false;
 
   taskService: TaskService = inject(TaskService);
-  notificationService: LocalNotificationsService = inject(LocalNotificationsService);
+  toastService: ToastMessage = inject(ToastMessage);
 
   async ngOnInit() {
     await this.refreshList("pending");
+    this.checkDueDate();
   }
   
   async addItem() {
     const generatedId = Date.now().toString();
-    this.notificationService.createNotification(generatedId, this.taskForm.value.dueDate as string);
     this.taskService.createTask(generatedId, {
       id: generatedId,
       name: this.taskForm.value.name,
@@ -63,7 +64,6 @@ export class HomePage {
 
   async saveItem() {
     const id = this.taskForm.value.id as string;
-    this.notificationService.updateNotification(id, this.taskForm.value.dueDate as string);
     await this.taskService.editTask(id, {
       id: id,
       name: this.taskForm.value.name,
@@ -83,6 +83,7 @@ export class HomePage {
       this.taskList = taskList.filter(element => element.finished);
     } else if (filterStatus === "pending") {
       this.taskList = taskList.filter(element => !element.finished);
+      this.checkDueDate();
     }
   }
 
@@ -120,4 +121,38 @@ export class HomePage {
     this.editing = false;
   }
 
+  async clearList(){
+    this.presentAlert = true;
+  }
+
+  async checkDueDate() {
+    const now = new Date();
+    const currentDay = now.getDate();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const taskPendingList =  (await this.taskService.getAll()).filter(item => !item.finished);
+    taskPendingList.forEach(task => {
+      const taskDay = new Date(task.dueDate).getDate();
+      const taskMonth = new Date(task.dueDate).getMonth();
+      const taskYear = new Date(task.dueDate).getFullYear();
+      if(currentDay === taskDay && currentMonth === taskMonth && currentYear === taskYear) {
+        this.toastService.presentToast(task.name);
+      }
+    })
+  }
+
+  public alertButtons = [
+    {
+      text: 'Cancelar',
+      role: 'cancel',
+    },
+    {
+      text: 'Limpar tudo',
+      role: 'confirm',
+      handler: async () => {
+        await this.taskService.clearAllTasks();
+        this.refreshList('pending');
+      },
+    },
+  ];
 }
