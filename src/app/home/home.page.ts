@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from '../services/TaskStorage.service';
 import { ToastMessage } from '../services/ToastMessage.service';
 import { TaskCardComponent } from '../task-card/task-card.component';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +17,15 @@ import { Router } from '@angular/router';
 })
 export class HomePage {
   
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    this.router.events.subscribe(async (event) => {
+      if (event instanceof NavigationEnd) {
+        if (event.url === "/home") {
+          await this.refreshList("pending");
+        }
+      }
+    })
+  }
 
   taskList: Task[] = [];
   showPending = true;

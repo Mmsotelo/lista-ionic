@@ -41,7 +41,11 @@ export class TaskCardComponent  implements OnInit {
       finished: !taskToUpdate.finished,
       dueDate: taskToUpdate.dueDate,
     }).then(async() => {
-      this.callRefreshEvent.emit("pending");
+      if (taskToUpdate.finished) {
+        this.callRefreshEvent.emit("finished");
+      } else {
+        this.callRefreshEvent.emit("pending");
+      }
     });
   }
 
