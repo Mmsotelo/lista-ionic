@@ -1,0 +1,17 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-subtitle [style]="task.finished ? 'text-decoration: line-through; color: #71717A;' : ''">{{ task.name }}</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-row class="ion-justify-content-end ion-padding-horizontal">
+    <ion-button size="small" color="danger" (click)="removeItem(task.id)">
+      <ion-icon slot="icon-only" name="trash"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="!task.finished" size="small" color="secondary" (click)="editItem(task)">
+      <ion-icon slot="icon-only" name="pencil"></ion-icon>
+    </ion-button>
+    <ion-button size="small" (click)="updateState(task.id)">
+      {{ task.finished ? "Reabrir" : "Finalizar" }}
+    </ion-button>
+  </ion-row>
+</ion-card>

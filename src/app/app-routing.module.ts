@@ -7,6 +7,14 @@ export const routes: Routes = [
     loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
   },
   {
+    path: 'task',
+    loadComponent: () => import('./task-card/task-card.component').then((m) => m.TaskCardComponent),
+  },
+  {
+    path: 'task-form',
+    loadComponent: () => import('./task-form/task-form.component').then((m) => m.TaskFormComponent),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',

@@ -1,11 +1,3 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Lista de Tarefas
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
   <ion-alert
     [isOpen]="presentAlert"
@@ -14,72 +6,37 @@
     [buttons]="alertButtons"
     (didDismiss)="presentAlert = false"
   ></ion-alert>
-  <ion-card>
-    <ion-card-content>
-      <form [formGroup]="taskForm">
-        <ion-input label="Nome da tarefa" labelPlacement="floating" placeholder="Nova tarefa.." style="border-radius: 6px;" clear-input
-          autofocus fill="outline" (keydown.enter)="addItem()" formControlName="name">
-        </ion-input>
+  <ion-alert
+    [isOpen]="presentAlertDelete"
+    header="Deseja remover essa tarefa?"
+    message="Essa ação não poderá ser desfeita!"
+    [buttons]="alertButtonsDelete"
+    (didDismiss)="presentAlertDelete = false"
+  ></ion-alert>
 
-        <ion-row>
-          <ion-label>Data para realização:</ion-label>
-        </ion-row>
-
-        <ion-row>
-          <ion-datetime-button style="margin-top: 5px;" datetime="datetime"></ion-datetime-button>
-        </ion-row>
-
-        <ion-modal [keepContentsMounted]="true">
-          <ng-template>
-            <ion-datetime 
-              id="datetime"
-              presentation="date"
-              formControlName="dueDate"
-              [showDefaultButtons]="true"
-            ></ion-datetime>
-          </ng-template>
-        </ion-modal>
-        <ion-button *ngIf="!editing; else isEditing" expand="block" (click)="addItem()" [disabled]="!taskForm.value.name">
-          Adicionar
-        </ion-button>
-        <ng-template #isEditing>
-          <ion-row class="ion-justify-content-center">
-            <ion-button fill="outline" color="medium" (click)="cancelEdit()">
-              Cancelar
-            </ion-button>
-            <ion-button (click)="saveItem()" [disabled]="!taskForm.value.name">
-              Salvar
-            </ion-button>
-          </ion-row>
-        </ng-template>
-      </form>
-    </ion-card-content>
-  </ion-card>
-  <ion-row style="padding: 0 0.5rem; display: flex; align-items: center; justify-content: space-between">
-    <ion-button color="danger" size="small" (click)="clearList()">Limpar tudo</ion-button>
-    <ion-button *ngIf="showPending; else showFinished" size="small" (click)="toggleTaskList('finished')">Mostrar Finalizadas</ion-button>
+  <ion-row class="ion-justify-content-between ion-padding">
+    <ion-text>
+      <h1><strong>Lista de tarefas</strong></h1>
+    </ion-text>
+    <ion-button (click)="createNewTask()">
+      <ion-icon slot="icon-only" name="add"></ion-icon>
+    </ion-button>
+  </ion-row>
+  
+  <ion-row class="ion-padding-horizontal ion-justify-content-between ion-align-items-center">
+    <ion-button color="danger" size="small" (click)="clearList()">Limpar lista</ion-button>
+    <ion-button *ngIf="showPending; else showFinished" size="small" (click)="toggleTaskList(!showPending)">Mostrar Finalizadas</ion-button>
     <ng-template #showFinished>
-      <ion-button size="small" (click)="toggleTaskList('pending')">Mostrar Abertas</ion-button>
+      <ion-button size="small" (click)="toggleTaskList(!showPending)">Mostrar Abertas</ion-button>
     </ng-template>
   </ion-row>
   <ion-list style="margin: 0.5rem; padding: 0; border-radius: 6px; overflow-y: scroll;">
-    <ion-item-sliding *ngFor="let task of taskList" :key="task.id">
-      <ion-item-options>
-        <ion-item-option color="danger" (click)="deleteItem(task.id)">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-        <ion-item-option (click)="editItem(task.id)">
-          <ion-icon slot="icon-only" name="pencil"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-      <ion-item>
-        <ion-checkbox slot="start" aria-label="taskFinished" (ionChange)="updateState(task.id)"
-          [checked]="task.finished">
-        </ion-checkbox>
-        <ion-label 
-          [style]="task.finished ? 'text-decoration: line-through; color: #71717A;' : ''">{{ task.name }}
-        </ion-label>
-      </ion-item>
-    </ion-item-sliding>
+    <app-task-card 
+      *ngFor="let task of taskList" 
+      :key="task.id" 
+      [task]="task" 
+      (removeItemEvent)="deleteItem($event)"
+      (callRefreshEvent)="refreshList($event)"
+    />
   </ion-list>
 </ion-content>

@@ -1,0 +1,65 @@
+<ion-content>
+  <ion-row class="ion-padding">
+    <ion-button (click)="backToHome()">
+      <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+    </ion-button>
+    <ion-text class="ion-margin-horizontal">
+      <h1><strong>{{ title }} tarefa</strong></h1>
+    </ion-text>
+  </ion-row>
+  
+  <ion-card>
+    <ion-card-content>
+      <form [formGroup]="taskForm">
+        <ion-input 
+          label="Nome da tarefa" 
+          labelPlacement="floating" 
+          placeholder="Nova tarefa.." 
+          style="border-radius: 6px; margin: 0.5rem 0;" 
+          clear-input
+          autofocus fill="outline" 
+          (keydown.enter)="addItem()" 
+          formControlName="name">
+        </ion-input>
+  
+        <ion-row>
+          <ion-label>Data para realização:</ion-label>
+        </ion-row>
+  
+        <ion-row>
+          <ion-datetime-button style="margin-top: 5px;" datetime="datetime"></ion-datetime-button>
+        </ion-row>
+  
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime 
+              id="datetime"
+              presentation="date"
+              formControlName="dueDate"
+              [showDefaultButtons]="true"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <ion-button 
+          *ngIf="!editing; else isEditing" 
+          expand="block" 
+          (click)="addItem()"
+          style="margin-top: 1rem;" 
+          [disabled]="!taskForm.value.name">
+          Adicionar
+        </ion-button>
+        <ng-template #isEditing>
+          <ion-row class="ion-justify-content-between" style="margin-top: 1rem;" >
+            <ion-button fill="outline" color="medium" (click)="cancelEdit()">
+              Cancelar
+            </ion-button>
+            <ion-button (click)="saveItem()" [disabled]="!taskForm.value.name">
+              Salvar
+            </ion-button>
+          </ion-row>
+        </ng-template>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
